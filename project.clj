@@ -16,7 +16,7 @@
   [[org.clojure/clojure      "1.5.1"]
    [org.clojure/tools.reader "0.10.0"]
    [com.taoensso/encore      "2.53.1"]
-   [org.iq80.snappy/snappy   "0.4"]
+   [org.iq80.snappy/snappy   "0.2"]
    [org.tukaani/xz           "1.5"]
    [net.jpountz.lz4/lz4      "1.3"]]
 

@@ -25,6 +25,12 @@
 
 ;;;; Core
 
+(defn compress [^bytes data]
+  (let [^bytes compressed-out (byte-array (alength data))
+        compressed-size (org.iq80.snappy.Snappy/compress data 0 (alength data) compressed-out 0)
+        trimmed-buffer (java.util.Arrays/copyOf compressed-out compressed-size)]
+    trimmed-buffer))
+
 (deftest _core
   (is (do (println (str "Clojure version: " *clojure-version*)) true))
   (is (= test-data ((comp thaw freeze) test-data)))
@@ -69,7 +75,7 @@
   (is ; Snappy lib compatibility (for legacy versions of Nippy)
     (let [^bytes raw-ba    (freeze test-data {:compressor nil})
           ^bytes xerial-ba (org.xerial.snappy.Snappy/compress raw-ba)
-          ^bytes iq80-ba   (org.iq80.snappy.Snappy/compress   raw-ba)]
+          ^bytes iq80-ba   (compress   raw-ba)]
       (= (thaw raw-ba)
         (thaw (org.xerial.snappy.Snappy/uncompress xerial-ba))
         (thaw (org.xerial.snappy.Snappy/uncompress iq80-ba))
