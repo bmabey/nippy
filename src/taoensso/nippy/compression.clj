@@ -15,10 +15,22 @@
 
 (def standard-header-ids "These'll support :auto thaw." #{:snappy :lzma2 :lz4})
 
+;; public static byte[] compress(byte[] data)
+;; {
+;;  byte[] compressedOut = new byte[maxCompressedLength(data.length)];
+;;  int compressedSize = compress(data, 0, data.length, compressedOut, 0);
+;;  byte[] trimmedBuffer = Arrays.copyOf(compressedOut, compressedSize);
+;;  return trimmedBuffer;
+;;  }
+
 (deftype SnappyCompressor []
   ICompressor
   (header-id  [_] :snappy)
-  (compress   [_ ba] (org.iq80.snappy.Snappy/compress   ba))
+  (compress   [_ data]
+    (let [^bytes compressed-out (byte-array (alength ^bytes data))
+          compressed-size (org.iq80.snappy.Snappy/compress data 0 (alength ^bytes data) compressed-out 0)
+          trimmed-buffer (java.util.Arrays/copyOf compressed-out compressed-size)]
+      trimmed-buffer))
   (decompress [_ ba] (org.iq80.snappy.Snappy/uncompress ba 0 (alength ^bytes ba))))
 
 (def snappy-compressor
